@@ -1,6 +1,8 @@
 library(jsonlite)
 
-cat("Starting scraping steamspy.\n")
+setwd("git/game-data-collection")
+
+cat("Start scraping steamspy.\n")
 steamspy.data <- fromJSON("http://steamspy.com/api.php?request=all")
 cat("Processing scraped steamspy.\n")
 d <- data.frame()
@@ -14,5 +16,4 @@ filename <- paste("data/steamSpydata.", timestring, ".csv", sep="")
 
 cat(paste("Saving steamspy data in ",filename ,".\n", sep=""))
 
-write.table(d, file=filename)
 write.csv(d, file=filename, row.names=FALSE)
