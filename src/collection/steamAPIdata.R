@@ -1,14 +1,16 @@
 library(jsonlite)
 
+# setwd("git/game-data-collection")
 
-## TODO path in a globle const?
 ## TODO file pattern in a global const?
-steamSpy.files <- list.files("data", pattern="steamSpydata.*.csv")
+datafolder <- "../../gamedata"
+
+steamSpy.files <- list.files(datafolder, pattern="steamSpyData.*.csv")
 steamSpy.files <- steamSpy.files[order(file.mtime(steamSpy.files))]
 
-steamSpy.currentFile <-  steamSpy.files[1]
+steamSpy.currentFile <- steamSpy.files[1]
 
-d <- read.csv(paste("data/", steamSpy.currentFile, sep=""))
+d <- read.csv(paste(datafolder, "/" , steamSpy.currentFile, sep=""))
 
 ## get and package steamspy data
 cat("Starting sorting for players\n")
@@ -27,6 +29,12 @@ steamData <- data.frame(appid=as.Date(character()),
 								 )
 
 names(steamData) <- header
+
+## Inital timestamp and csv file
+timestring <- format(Sys.time(), "%Y%H%M%S")
+filename <- paste(datafolder, "/steamdata.", timestring, ".csv", sep="")
+
+write.table(steamData, file=filename)
 
 ## get current price data from steam
 # (based on current IP: final (after sale) prices in EU region 1, in Euro)
@@ -85,9 +93,11 @@ for (i in 1:nrow(d)) {
 			}
 
 			## data.framing
-				steamDataRow <- data.frame(row$appid, name, row$price, currency, is_free, metacritic_score, recommendations, release_date)
-				names(steamDataRow) <- header
-				steamData <- rbind(steamData, steamDataRow)
+			steamDataRow <- data.frame(row$appid, name, row$price, currency, is_free, metacritic_score, recommendations, release_date)
+			names(steamDataRow) <- header
+			## steamData <- rbind(steamData, steamDataRow)
+
+			write.table(steamDataRow, file=filename, sep=";", col.names=FALSE, row.names=FALSE, append=TRUE)
 		}
 		else{
 			## retry after 5 else
@@ -99,10 +109,3 @@ for (i in 1:nrow(d)) {
 }
 
 ## TODO: Only saves after everything is fatched. Should save gradually?
-timestring <- format(Sys.time(), "%Y%H%M%S")
-filename <- paste("data/steamdata.", timestring, ".csv", sep="")
-
-cat(paste("Saving steam data in ",filename ,".\n", sep=""))
-
-write.table(steamData, file=filename)
-write.csv(steamData, filename, row.names=FALSE)

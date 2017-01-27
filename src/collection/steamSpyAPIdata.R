@@ -1,6 +1,13 @@
 library(jsonlite)
 
-setwd("git/game-data-collection")
+# setwd("git/game-data-collection")
+
+datafolder <- "../../gamedata"
+
+if (!file.exists(datafolder)) {
+	cat(paste("data folder: \"", datafolder ,"\" sould be created.\n", sep=""))
+	q()
+}
 
 cat("Start scraping steamspy.\n")
 steamspy.data <- fromJSON("http://steamspy.com/api.php?request=all")
@@ -12,7 +19,7 @@ for (i in steamspy.data) {
 }
 
 timestring <- format(Sys.time(), "%Y%H%M%S")
-filename <- paste("data/steamSpydata.", timestring, ".csv", sep="")
+filename <- paste(datafolder, "/steamSpyData.", timestring, ".csv", sep="")
 
 cat(paste("Saving steamspy data in ",filename ,".\n", sep=""))
 
