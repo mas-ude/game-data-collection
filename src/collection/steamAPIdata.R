@@ -33,7 +33,7 @@ names(steamData) <- header
 ## Inital timestamp and csv file
 timestring <- format(Sys.time(), "%Y%m%d%H%M%S")
 filename <- paste(datafolder, "/steamdata.", timestring, ".csv", sep="")
-notinApiFilename <- paste(datafolder, "/steamdata.notin.", timestring, ".csv", sep="")
+exlusionsApiFilename <- paste(datafolder, "/steamdata.exlusions.", timestring, ".csv", sep="")
 
 
 write.table(steamData, file=filename)
@@ -72,8 +72,8 @@ for (i in 1:nrow(d)) {
 
 		if(is.na(tmp)) {
 			cat("Crawling failed. Timeout!\n")
-			cat("Retry After", waiter*2, "Secounds\n")
-			waiter <- waiter*2
+			waiter <- max(1, waiter*2)
+			cat("Retry After", waiter , "Secounds\n")
 			Sys.sleep(waiter)
 			next
 		}
@@ -85,7 +85,7 @@ for (i in 1:nrow(d)) {
 		if (!success)
 		{
 			cat("Crawling failed. Not in API!\n")
-			write(row$appid, file = notinApiFilenam, append = TRUE, sep = "\n")
+			write(row$appid, file = exlusionsApiFilename, append = TRUE, sep = "\n")
 			next;
 		}
 
