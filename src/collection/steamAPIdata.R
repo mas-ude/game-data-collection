@@ -33,6 +33,7 @@ names(steamData) <- header
 ## Inital timestamp and csv file
 timestring <- format(Sys.time(), "%Y%m%d%H%M%S")
 filename <- paste(datafolder, "/steamdata.", timestring, ".csv", sep="")
+notinApiFilename <- paste(datafolder, "/steamdata.notin.", timestring, ".csv", sep="")
 
 write.table(steamData, file=filename)
 
@@ -40,6 +41,7 @@ write.table(steamData, file=filename)
 # (based on current IP: final (after sale) prices in EU region 1, in Euro)
 cat("Scrapping price data from steam\n")
 counter <- 0
+waiter <- 1
 for (i in 1:nrow(d)) {
 	counter <- counter + 1
 	row <- d[i,]
@@ -49,7 +51,7 @@ for (i in 1:nrow(d)) {
 		cat(":", row$appid, "\n")
     next
   }
-	Sys.sleep(1) # steam storefront API is throttled to ~200requests/5mins
+	Sys.sleep(waiter) # steam storefront API is throttled to ~200requests/5mins
 
 	## DEBUG BREAK
 	## if(counter > 10)
@@ -60,65 +62,63 @@ for (i in 1:nrow(d)) {
 		cat(counter, "/",  nrow(d), "crawler at appid:", row$appid ," \n")
 	  ## print(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
 
-		timeout <- FALSE
-		tryCatch({
+		tmp <- NA
+		returnTryCatch = tryCatch({
 			tmp <- fromJSON(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
-		}, error = function(e) {
+		},
+		error = function(err){cat("COMMUNICATION ERROR!\n")}
+		)
+
+		if(is.na(tmp)) {
 			cat("Crawling failed. Timeout!\n")
-			timeout <- TRUE
-		})
-		## print(success)
-		if(!timeout){
-			retry <- FALSE
-			waiter <- 1
-			
-			success <- tmp[[paste(row$appid)]]$success
-				if (!success)
-				{
-					cat("Crawling failed. Not in API!\n")
-					next;
-				}
-
-			price <- tmp[[paste(row$appid)]]$data$price_overview$final
-
-	  	if(!is.null(price)) {
-	    	row$price <- price
-	  	} else { # TODO: additionally check for is.free here!
-	    	row$price <- 0
-	  	}
-
-			name <-tmp[[paste(row$appid)]]$data$name
-			is_free <- tmp[[paste(row$appid)]]$data$is_free
-			currency <-  tmp[[paste(row$appid)]]$data$currency
-			if(is.null(currency)){
-				currency <- ""
-			}
-			metacritic_score <- tmp[[paste(row$appid)]]$data$metacritic$score
-			if(is.null(metacritic_score)){
-				metacritic_score <- 0
-			}
-			recommendations <- tmp[[paste(row$appid)]]$data$recommendations$total
-			if(is.null(recommendations)){
-				recommendations <- 0
-			}
-			release_date <-  tmp[[paste(row$appid)]]$data$release_date$date
-			if(is.null(release_date)){
-				release_date <- ""
-			}
-
-			## data.framing
-			steamDataRow <- data.frame(row$appid, name, row$price, currency, is_free, metacritic_score, recommendations, release_date)
-			names(steamDataRow) <- header
-			## steamData <- rbind(steamData, steamDataRow)
-
-			write.table(steamDataRow, file=filename, sep=";", col.names=FALSE, row.names=FALSE, append=TRUE)
-			Sys.sleep(2)
-		}
-		else{
-			## retry after 2,4,8,16.. secs.
-			cat("Retry\n")
+			cat("Retry After", waiter*2, "Secounds\n")
 			waiter <- waiter*2
 			Sys.sleep(waiter)
+			next
 		}
+
+		retry <- FALSE
+		waiter <- max(0, waiter - 4)
+
+		success <- tmp[[paste(row$appid)]]$success
+		if (!success)
+		{
+			cat("Crawling failed. Not in API!\n")
+			next;
+		}
+
+		price <- tmp[[paste(row$appid)]]$data$price_overview$final
+
+  	if(!is.null(price)) {
+    	row$price <- price
+  	} else { # TODO: additionally check for is.free here!
+    	row$price <- 0
+  	}
+
+		name <-tmp[[paste(row$appid)]]$data$name
+		is_free <- tmp[[paste(row$appid)]]$data$is_free
+		currency <-  tmp[[paste(row$appid)]]$data$currency
+		if(is.null(currency)){
+			currency <- ""
+		}
+		metacritic_score <- tmp[[paste(row$appid)]]$data$metacritic$score
+		if(is.null(metacritic_score)){
+			metacritic_score <- 0
+		}
+		recommendations <- tmp[[paste(row$appid)]]$data$recommendations$total
+		if(is.null(recommendations)){
+			recommendations <- 0
+		}
+		release_date <-  tmp[[paste(row$appid)]]$data$release_date$date
+		if(is.null(release_date)){
+			release_date <- ""
+		}
+
+		## data.framing
+		steamDataRow <- data.frame(row$appid, name, row$price, currency, is_free, metacritic_score, recommendations, release_date)
+		names(steamDataRow) <- header
+		## steamData <- rbind(steamData, steamDataRow)
+
+		write.table(steamDataRow, file=filename, sep=";", col.names=FALSE, row.names=FALSE, append=TRUE)
 	}
 }
