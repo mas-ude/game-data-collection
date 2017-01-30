@@ -9,9 +9,11 @@
 import urllib.request, urllib.error, urllib.parse
 import lxml.html
 import csv
+from time import gmtime, strftime
 
 # This is where we will output to
-output_file = open('../../gamedata/metacritic.csv', 'w')
+timestring = strftime("%Y%m%d%H%M%S", gmtime())
+output_file = open('../../gamedata/metacritic.' + timestring + '.csv', 'w')
 csv_writer = csv.DictWriter(output_file, fieldnames=["user_score", "publisher", "title", "genre", "score", "release", "platform"], delimiter=';')
 csv_writer.writeheader()
 

@@ -18,7 +18,7 @@ for (i in steamspy.data) {
   d <- rbind(d, tmp)
 }
 
-timestring <- format(Sys.time(), "%Y%H%M%S")
+timestring <- format(Sys.time(), "%Y%m%d%H%M%S")
 filename <- paste(datafolder, "/steamSpyData.", timestring, ".csv", sep="")
 
 cat(paste("Saving steamspy data in ",filename ,".\n", sep=""))

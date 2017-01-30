@@ -31,7 +31,7 @@ steamData <- data.frame(appid=as.Date(character()),
 names(steamData) <- header
 
 ## Inital timestamp and csv file
-timestring <- format(Sys.time(), "%Y%H%M%S")
+timestring <- format(Sys.time(), "%Y%m%d%H%M%S")
 filename <- paste(datafolder, "/steamdata.", timestring, ".csv", sep="")
 
 write.table(steamData, file=filename)
