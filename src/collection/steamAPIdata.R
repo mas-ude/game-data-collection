@@ -35,6 +35,7 @@ timestring <- format(Sys.time(), "%Y%m%d%H%M%S")
 filename <- paste(datafolder, "/steamdata.", timestring, ".csv", sep="")
 notinApiFilename <- paste(datafolder, "/steamdata.notin.", timestring, ".csv", sep="")
 
+
 write.table(steamData, file=filename)
 
 ## get current price data from steam
@@ -84,6 +85,7 @@ for (i in 1:nrow(d)) {
 		if (!success)
 		{
 			cat("Crawling failed. Not in API!\n")
+			write(row$appid, file = notinApiFilenam, append = TRUE, sep = "\n")
 			next;
 		}
 
