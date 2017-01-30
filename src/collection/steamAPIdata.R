@@ -49,7 +49,7 @@ for (i in 1:nrow(d)) {
 		cat(":", row$appid, "\n")
     next
   }
-	Sys.sleep(1) # steam storefront API is throttled to ~200requests/5mins
+	Sys.sleep(7) # steam storefront API is throttled to ~200requests/5mins
 
 	## DEBUG BREAK
 	## if(counter > 10)
@@ -98,6 +98,7 @@ for (i in 1:nrow(d)) {
 			## steamData <- rbind(steamData, steamDataRow)
 
 			write.table(steamDataRow, file=filename, sep=";", col.names=FALSE, row.names=FALSE, append=TRUE)
+			Sys.sleep(2)
 		}
 		else{
 			## retry after 5 else
@@ -107,5 +108,3 @@ for (i in 1:nrow(d)) {
 		}
 	}
 }
-
-## TODO: Only saves after everything is fatched. Should save gradually?
