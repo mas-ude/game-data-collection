@@ -1,3 +1,3 @@
 #!/bin/bash
-runMetacritc.sh
-runSteam.sh
+bash runMetacritc.sh
+bash runSteam.sh
