@@ -49,7 +49,7 @@ for (i in 1:nrow(d)) {
 		cat(":", row$appid, "\n")
     next
   }
-	Sys.sleep(7) # steam storefront API is throttled to ~200requests/5mins
+	Sys.sleep(1) # steam storefront API is throttled to ~200requests/5mins
 
 	## DEBUG BREAK
 	## if(counter > 10)
@@ -57,14 +57,28 @@ for (i in 1:nrow(d)) {
 
 	retry <- TRUE
 	while(retry) {
-		cat(counter, "/",  nrow(d), "\n")
+		cat(counter, "/",  nrow(d), "crawler at appid:", row$appid ," \n")
 	  ## print(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
-	  tmp <- fromJSON(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
-		success <- tmp[[paste(row$appid)]]$success
+
+		timeout <- FALSE
+		tryCatch({
+			tmp <- fromJSON(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
+		}, error = function(e) {
+			cat("Crawling failed. Timeout!\n")
+			timeout <- TRUE
+		})
 		## print(success)
-		if(success){
+		if(!timeout){
 			retry <- FALSE
 			waiter <- 1
+			
+			success <- tmp[[paste(row$appid)]]$success
+				if (!success)
+				{
+					cat("Crawling failed. Not in API!\n")
+					next;
+				}
+
 			price <- tmp[[paste(row$appid)]]$data$price_overview$final
 
 	  	if(!is.null(price)) {
@@ -101,7 +115,7 @@ for (i in 1:nrow(d)) {
 			Sys.sleep(2)
 		}
 		else{
-			## retry after 5 else
+			## retry after 2,4,8,16.. secs.
 			cat("Retry\n")
 			waiter <- waiter*2
 			Sys.sleep(waiter)
