@@ -8,7 +8,7 @@ datafolder <- "../../gamedata"
 steamSpy.files <- list.files(datafolder, pattern="steamSpyData.*.csv")
 steamSpy.files <- steamSpy.files[order(file.mtime(steamSpy.files))]
 
-steamSpy.currentFile <- steamSpy.files[1]
+steamSpy.currentFile <- steamSpy.files[length(steamSpy.files)]
 
 d <- read.csv(paste(datafolder, "/" , steamSpy.currentFile, sep=""))
 
