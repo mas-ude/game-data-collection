@@ -72,7 +72,7 @@ for (i in 1:nrow(d)) {
 
 		if(is.na(tmp)) {
 			cat("Crawling failed. Timeout!\n")
-			waiter <- max(1, waiter*2)
+			waiter <- max(1, waiter + 20)
 			cat("Retry After", waiter , "Secounds\n")
 			Sys.sleep(waiter)
 			next
