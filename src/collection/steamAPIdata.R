@@ -36,7 +36,7 @@ filename <- paste(datafolder, "/steamdata.", timestring, ".csv", sep="")
 exlusionsApiFilename <- paste(datafolder, "/steamdata.exlusions.", timestring, ".csv", sep="")
 
 
-write.table(steamData, file=filename)
+write.table(steamData, file=filename, sep=";")
 
 ## get current price data from steam
 # (based on current IP: final (after sale) prices in EU region 1, in Euro)
