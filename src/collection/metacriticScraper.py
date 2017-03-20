@@ -24,7 +24,7 @@ for platform in platforms:
     while True:
         print("scraping " + platform + " page " + str(page))
         sys.stdout.flush()
-        url = "http://www.metacritic.com/browse/games/release-date/available/" + platform + "/name?hardware=all&view=detailed&page=" + str(page)
+        url = "http://www.metacritic.com/browse/games/release-date/available/" + platform + "/name?view=detailed&page=" + str(page)
         try:
             request = urllib.request.Request(url, headers={"User-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"})
             html = urllib.request.urlopen(request).read()
