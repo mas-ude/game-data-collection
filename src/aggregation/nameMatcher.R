@@ -6,11 +6,11 @@ datafolder <- "../../gamedata"
 
 getNames <- function(serviceName, csvlookup) {
 	service.files <- list.files(datafolder, pattern=paste(serviceName, ".\\d*.csv", sep=""))
-	service.files <- service.files[order(file.mtime(service.files))]
+	service.files <- service.files[order(file.mtime(service.files), decreasing = TRUE)]
 
-	service.currentFile <- service.files[length(service.files)]
+	service.currentFile <- service.files[1]
 
-# print(service.currentFile)
+print(service.currentFile)
 
 	d <- read.csv(paste(datafolder, "/" , service.currentFile, sep=""),stringsAsFactors=FALSE, sep=";")
 
@@ -105,7 +105,7 @@ for(x in metacritic.names.left) {
 
 	for(sn in steam.names){
 		sim <-stringsim(sn, x)
-		if(sim > 0.4) {
+		if(sim > 0.6) {
 			v <- names(c("Variant","Simularity"))
 			v["Variant"] <-  steam.unmodified.names[match(sn, steam.names)]
 			v["Simularity"] <- sim
@@ -140,4 +140,5 @@ for(x in metacritic.names.left) {
 }
 
 filename <- paste(datafolder, "/matchedMetacritcToSteam.unresolved.", timestring, ".csv", sep="")
-write.table(steamMetacritic.unresolved.list, file=filename, sep=";", col.names=TRUE, row.names=FALSE)
+#write.table(steamMetacritic.unresolved.list, file=filename, sep=";", col.names=TRUE, row.names=FALSE)
+write.csv(steamMetacritic.unresolved.list, file=datafolder)
