@@ -5,7 +5,7 @@
 # scrapes all game related release information as well as aggregated scores
 # for all platforms from the site and writes it to a csv
 
-
+import sys
 import urllib.request, urllib.error, urllib.parse
 import lxml.html
 import csv
@@ -23,6 +23,7 @@ for platform in platforms:
     page = 0
     while True:
         print("scraping " + platform + " page " + str(page))
+        sys.stdout.flush()
         url = "http://www.metacritic.com/browse/games/release-date/available/" + platform + "/name?hardware=all&view=detailed&page=" + str(page)
         request = urllib.request.Request(url, headers={"User-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"})
         html = urllib.request.urlopen(request).read()
