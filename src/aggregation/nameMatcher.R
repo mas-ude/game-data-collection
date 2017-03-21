@@ -131,11 +131,8 @@ for(x in metacritic.names.left) {
 	}
 
 	steamMetacritic.unresolved.list <- rbind(row, steamMetacritic.unresolved.list)
-	if((z %% 10) == 0){
+	if((z %% 100) == 0){
 		cat(paste("#", z))
-	}
-	if(z == 100){
-		break;
 	}
 }
 
