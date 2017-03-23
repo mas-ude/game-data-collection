@@ -6,7 +6,7 @@ datafolder <- "../../gamedata"
 
 getNames <- function(serviceName, csvlookup) {
 	service.files <- list.files(datafolder, pattern=paste(serviceName, ".\\d*.csv", sep=""))
-	service.files <- service.files[order(file.mtime(service.files), decreasing = TRUE)]
+	service.files <- service.files[order(service.files,decreasing = TRUE)]
 
 	service.currentFile <- service.files[1]
 
