@@ -3,7 +3,7 @@ library(jsonlite)
 # setwd("git/game-data-collection")
 
 ## TODO file pattern in a global const?
-datafolder <- "../../gamedata"
+datafolder <- "."
 
 steamSpy.files <- list.files(datafolder, pattern="steamSpyData.*.csv")
 steamSpy.files <- steamSpy.files[order(file.mtime(steamSpy.files))]

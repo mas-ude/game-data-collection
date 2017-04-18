@@ -2,7 +2,7 @@ library(jsonlite)
 
 # setwd("git/game-data-collection")
 
-datafolder <- "../../gamedata"
+datafolder <- "."
 
 if (!file.exists(datafolder)) {
 	cat(paste("data folder: \"", datafolder ,"\" sould be created.\n", sep=""))

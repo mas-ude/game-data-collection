@@ -1,8 +1,8 @@
-setwd("git/game-data-collection")
+#  setwd("git/game-data-collection")
 
 
 df.priced <- data.frame()
-csv.list <- Sys.glob("steamdata-*.csv")
+csv.list <- Sys.glob("../../gamedata/steamdata-*.csv")
 for (csv.file in csv.list) {
   print(csv.file)
   tmp <- read.csv(file=csv.file)
@@ -10,4 +10,3 @@ for (csv.file in csv.list) {
   tmp$date <- date
   df.priced <- rbind(df.priced, tmp)
 }
-
