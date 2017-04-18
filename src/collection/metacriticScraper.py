@@ -5,23 +5,23 @@
 # for all platforms from the site and writes it to a csv
 
 
-from optparse import OptionParser
+from argparse import ArgumentParser
 import sys
 import urllib.request, urllib.error, urllib.parse
 import lxml.html
 import csv
 from time import gmtime, strftime
 
-parser = OptionParser()
-parser.add_option("-o", "--output", dest="output",
+parser = ArgumentParser()
+parser.add_argument("-o", "--output",
                   help="folder to write data in", metavar="FILE")
 
-(options, args) = parser.parse_args()
+args = parser.parse_args()
 
 # This is where we will output to
 timestring = strftime("%Y%m%d%H%M%S", gmtime())
-output_file = open(options.output + '/metacritic.' + timestring + '.csv', 'w')
-log = open(options.output + '/metacritic.log', 'w')
+output_file = open(args.output + '/metacritic.' + timestring + '.csv', 'w')
+log = open(args.output + '/metacritic.log', 'w')
 csv_writer = csv.DictWriter(output_file, fieldnames=["user_score", "publisher", "title", "genre", "score", "release", "platform"], delimiter=';')
 csv_writer.writeheader()
 
