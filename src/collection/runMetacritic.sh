@@ -1,2 +1,2 @@
 #!/bin/bash
-python metacriticScraper.py --output $1
+python3 metacriticScraper.py --output $1
