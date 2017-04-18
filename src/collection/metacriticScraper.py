@@ -1,19 +1,27 @@
 #!/usr/local/bin/python3
 
-
 ## Metacritic Scraper
 # scrapes all game related release information as well as aggregated scores
 # for all platforms from the site and writes it to a csv
 
+
+from optparse import OptionParser
 import sys
 import urllib.request, urllib.error, urllib.parse
 import lxml.html
 import csv
 from time import gmtime, strftime
 
+parser = OptionParser()
+parser.add_option("-o", "--output", dest="output",
+                  help="folder to write data in", metavar="FILE")
+
+(options, args) = parser.parse_args()
+
 # This is where we will output to
 timestring = strftime("%Y%m%d%H%M%S", gmtime())
-output_file = open('metacritic.' + timestring + '.csv', 'w')
+output_file = open(options.output + '/metacritic.' + timestring + '.csv', 'w')
+log = open(options.output + '/metacritic.log', 'w')
 csv_writer = csv.DictWriter(output_file, fieldnames=["user_score", "publisher", "title", "genre", "score", "release", "platform"], delimiter=';')
 csv_writer.writeheader()
 
@@ -22,14 +30,14 @@ platforms = ["pc", "ps4", "ps3", "ps2", "ps", "vita", "psp", "xboxone", "xbox360
 for platform in platforms:
     page = 0
     while True:
-        print("scraping " + platform + " page " + str(page))
+        print("scraping " + platform + " page " + str(page), file=log)
         sys.stdout.flush()
         url = "http://www.metacritic.com/browse/games/release-date/available/" + platform + "/name?view=detailed&page=" + str(page)
         try:
             request = urllib.request.Request(url, headers={"User-agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1"})
             html = urllib.request.urlopen(request).read()
         except Exception as e:
-            print(e)
+            print(e, file=log)
             break
         root = lxml.html.fromstring(html)
 

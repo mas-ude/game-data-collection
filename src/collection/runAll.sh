@@ -1,8 +1,7 @@
 #!/bin/bash
 
-LOGFILE="/home/gamecrawler"
+FOLDER="$(date +%Y%m%d-%H%M%S)-GameCollection"
+mkdir -p $FOLDER
 
-mkdir -p "$(date +%Y%m%d-%H%M%S)-GameCollection"
-
-bash runMetacritc.sh
-bash runSteam.sh
+bash runMetacritc.sh $FOLDER
+bash runSteam.sh $FOLDER

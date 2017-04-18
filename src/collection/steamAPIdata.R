@@ -1,9 +1,21 @@
 library(jsonlite)
+library(optparse)
+library(logging)
 
 # setwd("git/game-data-collection")
 
-## TODO file pattern in a global const?
-datafolder <- "."
+option_list = list(
+  make_option(c("-o", "--output"), action="store", type="character", default=".",
+              help="folder to write data in", metavar="character")
+)
+
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
+
+datafolder <- opt$output
+
+basicConfig()
+addHandler(writeToFile, file= paste(opt$output, "/steamAPI.log", sep=""))
 
 steamSpy.files <- list.files(datafolder, pattern="steamSpyData.*.csv")
 steamSpy.files <- steamSpy.files[order(file.mtime(steamSpy.files))]
@@ -13,7 +25,7 @@ steamSpy.currentFile <- steamSpy.files[length(steamSpy.files)]
 d <- read.csv(paste(datafolder, "/" , steamSpy.currentFile, sep=""))
 
 ## get and package steamspy data
-cat("Starting sorting for players\n")
+loginfo("Starting sorting for players\n")
 ## sort data by players, descending
 d <- d[with(d, order(-players_forever)), ]
 
@@ -40,7 +52,7 @@ write.table(steamData, file=filename, sep=";")
 
 ## get current price data from steam
 # (based on current IP: final (after sale) prices in EU region 1, in Euro)
-cat("Scrapping price data from steam\n")
+loginfo("Scrapping price data from steam\n")
 counter <- 0
 waiter <- 1
 for (i in 1:nrow(d)) {
@@ -48,8 +60,8 @@ for (i in 1:nrow(d)) {
 	row <- d[i,]
   # Skip "empty" app IDs
 	if (is.na(row$appid)) {
-    cat(i, "was NA")
-		cat(":", row$appid, "\n")
+    loginfo(i, "was NA")
+		loginfo(paste(":", row$appid, "\n"))
     next
   }
 	Sys.sleep(waiter) # steam storefront API is throttled to ~200requests/5mins
@@ -60,20 +72,20 @@ for (i in 1:nrow(d)) {
 
 	retry <- TRUE
 	while(retry) {
-		cat(counter, "/",  nrow(d), "crawler at appid:", row$appid ," \n")
+		loginfo(paste(counter, "/",  nrow(d), "crawler at appid:", row$appid ," \n"))
 	  ## print(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
 
 		tmp <- NA
 		returnTryCatch = tryCatch({
 			tmp <- fromJSON(paste("http://store.steampowered.com/api/appdetails/?appids=",row$appid, sep=""))
 		},
-		error = function(err){cat("COMMUNICATION ERROR!\n")}
+		error = function(err){loginfo("COMMUNICATION ERROR!\n")}
 		)
 
 		if(is.na(tmp)) {
-			cat("Crawling failed. Timeout!\n")
+			loginfo("Crawling failed. Timeout!\n")
 			waiter <- max(1, waiter + 20)
-			cat("Retry After", waiter , "Secounds\n")
+			loginfo(paste("Retry After", waiter , "Secounds\n"))
 			Sys.sleep(waiter)
 			next
 		}
@@ -84,7 +96,7 @@ for (i in 1:nrow(d)) {
 		success <- tmp[[paste(row$appid)]]$success
 		if (!success)
 		{
-			cat("Crawling failed. Not in API!\n")
+			loginfo("Crawling failed. Not in API!\n")
 			write(row$appid, file = exlusionsApiFilename, append = TRUE, sep = "\n")
 			next;
 		}
