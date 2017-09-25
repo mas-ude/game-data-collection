@@ -136,6 +136,6 @@ for(x in metacritic.names.left) {
 	}
 }
 
-filename <- paste(datafolder, "/matchedMetacritcToSteam.unresolved.", timestring, ".csv", sep="")
+filename <- paste(datafolder, "/matchedMetacriticToSteam.unresolved.", timestring, ".csv", sep="")
 write.table(steamMetacritic.unresolved.list, file=filename,na="", sep=";", col.names=TRUE, row.names=FALSE)
 #write.csv(steamMetacritic.unresolved.list, file=filename)
